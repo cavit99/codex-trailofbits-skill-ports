@@ -80,6 +80,18 @@ Map common GitHub tasks to `gh` commands:
 - Gist view: `gh gist view <gist-id>`
 - Generic API endpoint: `gh api <endpoint>`
 
+When calling REST endpoints with query parameters, be explicit about the HTTP method:
+
+- Use `gh api -X GET ... -f key=value` for list/search/read endpoints
+- Do not rely on bare `-f` for these cases, because `gh api` may switch the request to `POST`
+
+Common examples:
+
+- Commits since a timestamp:
+  - `gh api -X GET repos/owner/repo/commits -f since=... -f per_page=10`
+- Repository search:
+  - `gh api -X GET search/repositories -f q='...' -f sort=updated -f order=desc`
+
 ## URL Handling
 
 Translate GitHub URLs into `gh` workflows:
@@ -148,6 +160,7 @@ When this skill is active:
 2. Prefer a shallow clone for repository file contents.
 3. Avoid unauthenticated GitHub fetches unless there is no better option.
 4. State the fallback clearly if `gh` cannot be used.
+5. For REST reads with query params, force `-X GET` so search and commit endpoints do not fail due to an accidental `POST`.
 
 ## Helper Scripts
 
