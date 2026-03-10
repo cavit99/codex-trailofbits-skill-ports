@@ -7,6 +7,7 @@ This repository contains Codex-adapted versions of selected skills from the Clau
 - `audit-context-building`
 - `gh-cli`
 - `modern-python`
+- `polymarket-api`
 
 These were built as Codex-compatible `SKILL.md`-first ports while preserving the practical utility of the original Claude plugin workflows.
 
@@ -24,7 +25,7 @@ Install directly from this repo with the Codex skill installer:
 ```bash
 python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
   --repo cavit99/codex-trailofbits-skill-ports \
-  --path audit-context-building gh-cli modern-python
+  --path audit-context-building gh-cli modern-python polymarket-api
 ```
 
 (Use `--path` values as needed for a subset.)

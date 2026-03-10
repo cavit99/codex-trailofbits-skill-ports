@@ -1,0 +1,4 @@
+interface:
+  display_name: "Polymarket API"
+  short_description: "Use Polymarket APIs and endpoint workflows"
+  default_prompt: "Use $polymarket-api to choose the right Polymarket endpoint or SDK flow for this task."
