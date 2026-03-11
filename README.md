@@ -6,6 +6,7 @@ This repository contains Codex-adapted versions of selected skills from the Clau
 
 - `audit-context-building`
 - `gh-cli`
+- `mlx`
 - `modern-python`
 - `polymarket-api`
 
@@ -18,6 +19,10 @@ https://github.com/trailofbits/skills/tree/main/plugins/gh-cli
 
 `audit-context-building` and `modern-python` are also adapted to match Codex skill conventions.
 
+The `mlx` skill is a current-source MLX / MLX-LM Codex skill focused on Apple
+silicon workflows, runtime validation, porting checks, and local model
+verification.
+
 ## Usage
 
 Install directly from this repo with the Codex skill installer:
@@ -25,7 +30,7 @@ Install directly from this repo with the Codex skill installer:
 ```bash
 python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
   --repo cavit99/codex-trailofbits-skill-ports \
-  --path audit-context-building gh-cli modern-python polymarket-api
+  --path audit-context-building gh-cli mlx modern-python polymarket-api
 ```
 
 (Use `--path` values as needed for a subset.)
