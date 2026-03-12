@@ -13,13 +13,27 @@ import importlib
 import inspect
 import os
 import re
+import sys
 import tempfile
 from dataclasses import dataclass
 from typing import Callable
 
-import mlx.core as mx
-import mlx.nn as nn
-import numpy as np
+DEPENDENCY_ERROR: Exception | None = None
+
+try:
+    import mlx.core as mx
+    import mlx.nn as nn
+except ModuleNotFoundError as exc:
+    DEPENDENCY_ERROR = exc
+    mx = None
+    nn = None
+
+try:
+    import numpy as np
+except ModuleNotFoundError as exc:
+    if DEPENDENCY_ERROR is None:
+        DEPENDENCY_ERROR = exc
+    np = None
 
 
 @dataclass
@@ -57,7 +71,7 @@ def compare(actual: str, baseline: str) -> str:
 
 
 def check_mlx_version() -> Result:
-    baseline = "0.31.0"
+    baseline = "0.31.1"
     state = compare(mx.__version__, baseline)
     if state == "equal":
         return Result("PASS", "", f"mlx=={mx.__version__}")
@@ -86,13 +100,33 @@ def check_mlx_core() -> Result:
     if not arrays_equal(tmp, mx.array([5.0, 2.0, 6.0])):
         return Result("FAIL", "", f"unexpected boolean assignment result {tmp}")
 
+    f16 = mx.zeros((2,), dtype=mx.float16)
+    bf16 = mx.zeros((2,), dtype=mx.bfloat16)
+    f16[mx.array([True, False])] = True
+    bf16[mx.array([False, True])] = True
+    mx.eval(f16, bf16)
+    if f16.tolist() != [1.0, 0.0]:
+        return Result("FAIL", "", f"unexpected float16 bool assignment result {f16.tolist()}")
+    if [float(v) for v in bf16.tolist()] != [0.0, 1.0]:
+        return Result("FAIL", "", f"unexpected bfloat16 bool assignment result {bf16.tolist()}")
+
+    if not hasattr(mx, "bartlett"):
+        return Result("FAIL", "", "mx.bartlett is missing")
+    bartlett = np.array(mx.bartlett(5))
+    if not np.allclose(bartlett, np.bartlett(5)):
+        return Result("FAIL", "", f"unexpected bartlett result {bartlett}")
+
     sliced_source = mx.array([1, 2, 3])
     sliced = sliced_source[:]
     sliced[0] = 9
     if sliced_source[0].item() != 1:
         return Result("FAIL", "", "slice mutated the original array")
 
-    return Result("PASS", "", "default dtypes, boolean mask limits, and slice-copy behavior match baseline")
+    return Result(
+        "PASS",
+        "",
+        "default dtypes, bartlett(), boolean mask limits, low-precision bool assignment, and slice-copy behavior match baseline",
+    )
 
 
 def check_compile_rules() -> Result:
@@ -393,6 +427,16 @@ def summarize(results: list[Result]) -> int:
 
 
 def main() -> int:
+    if DEPENDENCY_ERROR is not None:
+        missing = getattr(DEPENDENCY_ERROR, "name", str(DEPENDENCY_ERROR))
+        print(
+            "[FAIL] dependency: "
+            f"missing Python package {missing!r} for interpreter {sys.executable}. "
+            "Activate an MLX-capable environment or use mlx_probe.sh.",
+            file=sys.stderr,
+        )
+        return 1
+
     parser = argparse.ArgumentParser(description="Probe current MLX / MLX-LM runtime behavior.")
     parser.add_argument("--model-path", default=os.environ.get("MLX_LM_LOCAL_MODEL"))
     args = parser.parse_args()

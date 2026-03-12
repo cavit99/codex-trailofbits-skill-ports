@@ -46,13 +46,16 @@ Check latest upstream releases:
 Run the bundled runtime probe:
 
 ```bash
-python3 "$MLX_SKILL/scripts/mlx_probe.py"
+"$MLX_SKILL/scripts/mlx_probe.sh"
 ```
+
+The launcher checks both `python3` and `python` and picks one that can import
+`mlx`.
 
 Run the probe with a local MLX model:
 
 ```bash
-MLX_LM_LOCAL_MODEL=/path/to/model python3 "$MLX_SKILL/scripts/mlx_probe.py"
+MLX_LM_LOCAL_MODEL=/path/to/model "$MLX_SKILL/scripts/mlx_probe.sh"
 ```
 
 ## Workflow
@@ -90,7 +93,7 @@ If the repo already has an MLX validator, prefer that first.
 Otherwise run:
 
 ```bash
-python3 "$MLX_SKILL/scripts/mlx_probe.py"
+"$MLX_SKILL/scripts/mlx_probe.sh"
 ```
 
 The bundled probe checks high-signal MLX and MLX-LM behavior:
@@ -110,7 +113,7 @@ The bundled probe checks high-signal MLX and MLX-LM behavior:
 Use a local MLX model path when load/generate behavior matters:
 
 ```bash
-MLX_LM_LOCAL_MODEL=/path/to/model python3 "$MLX_SKILL/scripts/mlx_probe.py"
+MLX_LM_LOCAL_MODEL=/path/to/model "$MLX_SKILL/scripts/mlx_probe.sh"
 ```
 
 This adds:
@@ -183,4 +186,5 @@ common MLX-specific failure modes:
 ## Helpers
 
 - Release helper: [scripts/mlx_release_info.sh](./scripts/mlx_release_info.sh)
-- Runtime probe: [scripts/mlx_probe.py](./scripts/mlx_probe.py)
+- Runtime probe launcher: [scripts/mlx_probe.sh](./scripts/mlx_probe.sh)
+- Runtime probe implementation: [scripts/mlx_probe.py](./scripts/mlx_probe.py)
